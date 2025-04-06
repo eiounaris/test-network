@@ -37,7 +37,8 @@ Organizations:
         Type: Signature
         Rule: "OR('OrdererMSP.admin')"
     OrdererEndpoints:
-      - orderer.example.com:7050
+      - orderer0.example.com:7050
+      - orderer1.example.com:7051
   - &Org1
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
@@ -61,6 +62,12 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('Org1MSP.peer')"
+    AnchorPeers: 
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.org1.example.com
+              Port: 8050
   - &Org2
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
@@ -84,6 +91,12 @@ Organizations:
       Endorsement:
         Type: Signature
         Rule: "OR('Org2MSP.peer')"
+    AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.org2.example.com
+              Port: 9050
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -183,7 +196,8 @@ Orderer: &OrdererDefaults
   # as TLS validation.  The preferred way to specify orderer addresses is now
   # to include the OrdererEndpoints item in your org definition
   Addresses:
-    - orderer.example.com:7050
+    - orderer0.example.com:7050
+    - orderer1.example.com:7051
   # Batch Timeout: The amount of time to wait before creating a batch
   BatchTimeout: 2s
   # Batch Size: Controls the number of messages batched into a block
@@ -264,10 +278,14 @@ Profiles:
       OrdererType: etcdraft
       EtcdRaft:
         Consenters:
-          - Host: orderer.example.com
+          - Host: orderer0.example.com
             Port: 7050
-            ClientTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-            ServerTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+            ClientTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer0.example.com/tls/server.crt
+            ServerTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer0.example.com/tls/server.crt
+          - Host: orderer1.example.com
+            Port: 7051
+            ClientTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/server.crt
+            ServerTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/server.crt
       Organizations:
         - *OrdererOrg
       Capabilities: *OrdererCapabilities
